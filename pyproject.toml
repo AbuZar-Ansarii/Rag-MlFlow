@@ -10,6 +10,7 @@ dependencies = [
     "langchain-community>=0.4.1",
     "langchain-core>=1.2.7",
     "langchain-huggingface>=1.2.0",
+    "mlflow>=3.8.1",
     "pypdf>=6.6.0",
     "sentence-transformers>=5.2.0",
     "streamlit>=1.53.0",

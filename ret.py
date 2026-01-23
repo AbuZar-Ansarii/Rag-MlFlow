@@ -12,19 +12,19 @@ import os
 load_dotenv()
 
 PERSIST_DIRECTORY = "./faiss_db"
+pdf_path = r'E:\pandas\MLOPS\RAG Mlflow\data\ML_Algorithms_Interview_Handbook.pdf'
 
-# llm = HuggingFaceEndpoint(
-#     repo_id="meta-llama/Llama-Guard-3-1B-INT4", 
-#     task="text-generation",
-#     max_new_tokens=512,
-#     do_sample=False,
-#     repetition_penalty=1.03,
-# )
+llm_engine = HuggingFaceEndpoint(
+    repo_id="meta-llama/Llama-Guard-3-1B-INT4", 
+    task="text-generation",
+    max_new_tokens=512,
+    do_sample=False,
+    repetition_penalty=1.03,
+)
 
 
-# llm = ChatHuggingFace(llm=llm)
+llm = ChatHuggingFace(llm=llm_engine)
 
-pdf_path = r'E:\pandas\MLOPS\RAG Mlflow\data\3 laws.pdf'
 
 def load_process_pdf(pdf_path):
     loader = PyPDFLoader(pdf_path)
@@ -46,24 +46,11 @@ def load_process_pdf(pdf_path):
 
 chunks = load_process_pdf(pdf_path)
 
-prompt = PromptTemplate(
-        input_variables=["context", "input"],
-        template=(
-            '''You are an exam assistant. Answer ONLY from the given context.If the answer is not in the context, say:
-                "Not found in the syllabus.".\n\n'''
-            "Context:\n{context}\n\n"
-            "Question: {input}"
-        )
-    )
-
 embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-m3")
 
 vectorstore = FAISS.from_documents(
     documents=chunks,
-        embedding=embeddings,
-            persist_directory=PERSIST_DIRECTORY
+        embedding=embeddings
 )
 
-vectorstore.persist()
-
-# retriever = vectorstore.as_retriever(search_type="similarity", search_kwargs={"k":2})
+vectorstore.save_local(PERSIST_DIRECTORY)
